@@ -276,29 +276,6 @@ class RegistroUsuarioView(APIView):
             EmailVerificationToken.objects.create(user=user, token=token)
 
 
-            # 9️⃣ Enviar correo de verificación
-            link_verificacion = f"http://127.0.0.1:8000/api/verificar-email/?token={token}"
-            try:
-                # Renderizar template HTML
-                html_message = render_to_string('fiesta/email_verificacion.html', {
-                    'nombre': nombre,
-                    'link_verificacion': link_verificacion
-                })
-                
-                # Usa el backend configurado (SMTP Brevo)
-                email_msg = EmailMessage(
-                    subject='🎈 Verifica tu correo - Burbujitas de Colores',
-                    body=html_message,
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    to=[email]
-                )
-                email_msg.content_subtype = 'html' # Enviar como HTML
-                email_msg.send(fail_silently=False)
-            except Exception:
-                print("ERROR AL ENVIAR CORREO:")
-                traceback.print_exc()
-
-            
             # 9️⃣ Enviar correo de verificación (HTML)
             link_verificacion = f"http://127.0.0.1:8000/api/verificar-email/?token={token}"
             
@@ -403,7 +380,7 @@ class VerificarEmailView(APIView):
         token_obj.delete()
 
         # Renderizar página de éxito
-        return render(request, 'fiesta/verificacion_exito.html')
+        return render(request, 'emails/verification_success.html')
         return Response({'error': 'Falta el token'}, status=400)
 
         # Buscar el token en la base de datos
